@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Prerequisites
 *.d
 
@@ -67,3 +68,15 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+=======
+build/
+cmake-build-*/
+*.user
+*.o
+*.obj
+*.so
+*.dll
+*.exe
+moc_*.cpp
+qmlcache/
+>>>>>>> Initial commit: QML + CMake + C++ calculator
