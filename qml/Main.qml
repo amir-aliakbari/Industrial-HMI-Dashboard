@@ -100,114 +100,71 @@ ApplicationWindow {
                     }
                 }
             }
-
-            Item {
-                Layout.preferredWidth: 0
-                Layout.fillHeight: true
-            }
         }
 
-        RowLayout {
+        GridLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            spacing: 8
+            columns: 4
+            rowSpacing: 8
+            columnSpacing: 8
 
-            GridLayout {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                columns: 4
-                rowSpacing: 8
-                columnSpacing: 8
+            Repeater {
+                model: [
+                    { label: "7",  type: "num", action: "7" },
+                    { label: "8",  type: "num", action: "8" },
+                    { label: "9",  type: "num", action: "9" },
+                    { label: "÷",  type: "op",  action: "/" },
 
-                Repeater {
-                    model: [
-                        { label: "7",  type: "num", action: "7" },
-                        { label: "8",  type: "num", action: "8" },
-                        { label: "9",  type: "num", action: "9" },
-                        { label: "4",  type: "num", action: "4" },
-                        { label: "5",  type: "num", action: "5" },
-                        { label: "6",  type: "num", action: "6" },
-                        { label: "1",  type: "num", action: "1" },
-                        { label: "2",  type: "num", action: "2" },
-                        { label: "3",  type: "num", action: "3" },
-                        { label: "0",  type: "num", action: "0", wide: true },
-                        { label: ".",  type: "num", action: "." },
-                        { label: "=",  type: "eq",  action: "equals" }
-                    ]
+                    { label: "4",  type: "num", action: "4" },
+                    { label: "5",  type: "num", action: "5" },
+                    { label: "6",  type: "num", action: "6" },
+                    { label: "×",  type: "op",  action: "*" },
 
-                    Button {
-                        text: modelData.label
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 60
-                        font.pixelSize: 26
+                    { label: "1",  type: "num", action: "1" },
+                    { label: "2",  type: "num", action: "2" },
+                    { label: "3",  type: "num", action: "3" },
+                    { label: "−",  type: "op",  action: "-" },
 
-                        property color baseColor: modelData.type === "eq" ? "#ff9f0a"
-                                            : modelData.type === "num" ? "#333333" : "#ff9f0a"
-                        property color textColor: "#ffffff"
+                    { label: "0",  type: "num", action: "0" },
+                    { label: ".",  type: "num", action: "." },
+                    { label: "=",  type: "eq",  action: "equals" },
+                    { label: "+",  type: "op",  action: "+" }
+                ]
 
-                        background: Rectangle {
-                            radius: 30
-                            color: parent.pressed ? Qt.lighter(parent.baseColor, 1.3) : parent.baseColor
-                        }
+                Button {
+                    text: modelData.label
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    font.pixelSize: 26
 
-                        contentItem: Text {
-                            text: parent.text
-                            color: parent.textColor
-                            font.pixelSize: parent.font.pixelSize
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
+                    property color baseColor: modelData.type === "op" ? "#ff9f0a"
+                                        : modelData.type === "eq" ? "#ff9f0a"
+                                        : modelData.type === "fn" ? "#a5a5a5"
+                                        : "#333333"
 
-                        Layout.columnSpan: modelData.wide ? 2 : 1
+                    property color textColor: modelData.type === "fn" ? "#000000" : "#ffffff"
 
-                        onClicked: {
-                            switch (modelData.action) {
-                            case "equals": calc.equalsPressed(); break;
-                            case ".": calc.decimalPressed(); break;
-                            default: calc.digitPressed(modelData.action); break;
-                            }
-                        }
+                    background: Rectangle {
+                        radius: 35
+                        color: parent.pressed ? Qt.lighter(parent.baseColor, 1.3) : parent.baseColor
                     }
-                }
-            }
 
-            ColumnLayout {
-                spacing: 8
-                Layout.preferredWidth: 60
-                Layout.fillHeight: true
+                    contentItem: Text {
+                        text: parent.text
+                        color: parent.textColor
+                        font.pixelSize: parent.font.pixelSize
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
 
-                Repeater {
-                    model: [
-                        { label: "÷", type: "op", action: "/" },
-                        { label: "×", type: "op", action: "*" },
-                        { label: "−", type: "op", action: "-" },
-                        { label: "+", type: "op", action: "+" }
-                    ]
-
-                    Button {
-                        text: modelData.label
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        font.pixelSize: 26
-
-                        property color baseColor: "#ff9f0a"
-                        property color textColor: "#ffffff"
-
-                        background: Rectangle {
-                            radius: 30
-                            color: parent.pressed ? Qt.lighter(parent.baseColor, 1.3) : parent.baseColor
-                        }
-
-                        contentItem: Text {
-                            text: parent.text
-                            color: parent.textColor
-                            font.pixelSize: parent.font.pixelSize
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
-
-                        onClicked: {
-                            calc.operatorPressed(modelData.action)
+                    onClicked: {
+                        switch (modelData.action) {
+                        case "equals": calc.equalsPressed(); break;
+                        case ".": calc.decimalPressed(); break;
+                        case "/": case "*": case "-": case "+":
+                            calc.operatorPressed(modelData.action); break;
+                        default: calc.digitPressed(modelData.action); break;
                         }
                     }
                 }
