@@ -1,173 +1,157 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.0
-import Calculator 1.0
+import HmiDashboard 1.0
 
 ApplicationWindow {
     id: root
-    width: 340
-    height: 520
+    width: 480
+    height: 640
     visible: true
-    title: "Calculator"
-    color: "#1e1e1e"
+    title: "Industrial HMI Dashboard"
+    color: "#1a1a1a"
 
-    Calculator {
-        id: calc
+    HmiDashboard {
+        id: hmi
+        onSettingsRequested: settingsPopup.visible = true
+    }
+
+    Rectangle {
+        id: settingsPopup
+        anchors.fill: parent
+        color: "#000000"
+        opacity: 0.7
+        visible: false
+        z: 100
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: settingsPopup.visible = false
+        }
+
+        Rectangle {
+            width: 300
+            height: 200
+            anchors.centerIn: parent
+            color: "#2a2a2a"
+            radius: 16
+            border.color: "#00d4ff"
+            border.width: 2
+
+            Column {
+                anchors.centerIn: parent
+                spacing: 16
+
+                Text {
+                    text: "SETTINGS"
+                    color: "#00d4ff"
+                    font.pixelSize: 18
+                    font.bold: true
+                    font.family: "Courier"
+                }
+
+                Text {
+                    text: "Settings menu placeholder"
+                    color: "#ffffff"
+                    font.pixelSize: 14
+                }
+
+                HmiButton {
+                    text: "CLOSE"
+                    color: "#00d4ff"
+                    onClicked: settingsPopup.visible = false
+                }
+            }
+        }
     }
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 12
-        spacing: 8
+        anchors.margins: 24
+        spacing: 16
+
+        Text {
+            text: "INDUSTRIAL HMI DASHBOARD"
+            color: "#00d4ff"
+            font.pixelSize: 20
+            font.bold: true
+            font.family: "Courier"
+            Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
+        }
 
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: 140
-            color: "#262626"
-            radius: 12
+            Layout.fillHeight: true
+            color: "#2a2a2a"
+            radius: 16
+            border.color: "#00d4ff"
+            border.width: 2
 
             Column {
-                anchors.fill: parent
-                anchors.margins: 16
-                spacing: 4
+                anchors.centerIn: parent
+                spacing: 24
 
-                Text {
-                    id: exprText
-                    width: parent.width
-                    text: calc.expression
-                    color: "#9e9e9e"
-                    font.pixelSize: 18
-                    horizontalAlignment: Text.AlignRight
-                    elide: Text.ElideLeft
+                ValueDisplay {
+                    label: "CURRENT"
+                    value: hmi.current.toFixed(2)
+                    unit: "A"
+                    valueColor: "#00ff88"
                 }
 
-                Text {
-                    id: dispText
-                    width: parent.width
-                    text: calc.display
-                    color: "#ffffff"
-                    font.pixelSize: 48
-                    font.weight: Font.Light
-                    horizontalAlignment: Text.AlignRight
-                    elide: Text.ElideLeft
+                ValueDisplay {
+                    label: "VOLTAGE"
+                    value: hmi.voltage.toFixed(2)
+                    unit: "V"
+                    valueColor: "#ffaa00"
+                }
+
+                ValueDisplay {
+                    label: "TEMPERATURE"
+                    value: hmi.temperature.toFixed(2)
+                    unit: "°C"
+                    valueColor: "#ff4444"
                 }
             }
         }
 
         RowLayout {
             Layout.fillWidth: true
-            spacing: 8
+            Layout.preferredHeight: 56
+            spacing: 16
 
-            Repeater {
-                model: [
-                    { label: "C",  type: "fn",  action: "clear" },
-                    { label: "±",  type: "fn",  action: "sign" },
-                    { label: "%",  type: "fn",  action: "percent" },
-                    { label: "√",  type: "fn",  action: "sqrt" },
-                    { label: "⌫", type: "fn",  action: "backspace" }
-                ]
-
-                Button {
-                    text: modelData.label
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 50
-                    font.pixelSize: 22
-
-                    property color baseColor: modelData.type === "fn" ? "#a5a5a5" : "#ff9f0a"
-                    property color textColor: modelData.type === "fn" ? "#000000" : "#ffffff"
-
-                    background: Rectangle {
-                        radius: 25
-                        color: parent.pressed ? Qt.lighter(parent.baseColor, 1.3) : parent.baseColor
-                    }
-
-                    contentItem: Text {
-                        text: parent.text
-                        color: parent.textColor
-                        font.pixelSize: parent.font.pixelSize
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
-
-                    onClicked: {
-                        switch (modelData.action) {
-                        case "clear": calc.clearPressed(); break;
-                        case "sign": calc.signPressed(); break;
-                        case "percent": calc.percentPressed(); break;
-                        case "sqrt": calc.squareRootPressed(); break;
-                        case "backspace": calc.backspacePressed(); break;
-                        }
-                    }
-                }
+            HmiButton {
+                id: startBtn
+                Layout.fillWidth: true
+                text: "START"
+                color: "#00aa44"
+                enabled: !hmi.running
+                onClicked: hmi.start()
             }
-        }
 
-        GridLayout {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            columns: 4
-            rowSpacing: 8
-            columnSpacing: 8
+            HmiButton {
+                id: stopBtn
+                Layout.fillWidth: true
+                text: "STOP"
+                color: "#aa2200"
+                enabled: hmi.running
+                onClicked: hmi.stop()
+            }
 
-            Repeater {
-                model: [
-                    { label: "7",  type: "num", action: "7" },
-                    { label: "8",  type: "num", action: "8" },
-                    { label: "9",  type: "num", action: "9" },
-                    { label: "÷",  type: "op",  action: "/" },
+            HmiButton {
+                id: resetBtn
+                Layout.fillWidth: true
+                text: "RESET"
+                color: "#666666"
+                onClicked: hmi.reset()
+            }
 
-                    { label: "4",  type: "num", action: "4" },
-                    { label: "5",  type: "num", action: "5" },
-                    { label: "6",  type: "num", action: "6" },
-                    { label: "×",  type: "op",  action: "*" },
-
-                    { label: "1",  type: "num", action: "1" },
-                    { label: "2",  type: "num", action: "2" },
-                    { label: "3",  type: "num", action: "3" },
-                    { label: "−",  type: "op",  action: "-" },
-
-                    { label: "0",  type: "num", action: "0" },
-                    { label: ".",  type: "num", action: "." },
-                    { label: "=",  type: "eq",  action: "equals" },
-                    { label: "+",  type: "op",  action: "+" }
-                ]
-
-                Button {
-                    text: modelData.label
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    font.pixelSize: 26
-
-                    property color baseColor: modelData.type === "op" ? "#ff9f0a"
-                                        : modelData.type === "eq" ? "#ff9f0a"
-                                        : modelData.type === "fn" ? "#a5a5a5"
-                                        : "#333333"
-
-                    property color textColor: modelData.type === "fn" ? "#000000" : "#ffffff"
-
-                    background: Rectangle {
-                        radius: 35
-                        color: parent.pressed ? Qt.lighter(parent.baseColor, 1.3) : parent.baseColor
-                    }
-
-                    contentItem: Text {
-                        text: parent.text
-                        color: parent.textColor
-                        font.pixelSize: parent.font.pixelSize
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
-
-                    onClicked: {
-                        switch (modelData.action) {
-                        case "equals": calc.equalsPressed(); break;
-                        case ".": calc.decimalPressed(); break;
-                        case "/": case "*": case "-": case "+":
-                            calc.operatorPressed(modelData.action); break;
-                        default: calc.digitPressed(modelData.action); break;
-                        }
-                    }
-                }
+            HmiButton {
+                id: settingsBtn
+                Layout.fillWidth: true
+                text: "SETTINGS"
+                color: "#3366cc"
+                onClicked: hmi.settings()
             }
         }
     }

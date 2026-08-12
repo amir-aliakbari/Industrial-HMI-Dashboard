@@ -2,5 +2,7 @@
 <RCC version="1.0">
     <qresource prefix="/">
         <file>qml/Main.qml</file>
+        <file>qml/ValueDisplay.qml</file>
+        <file>qml/HmiButton.qml</file>
     </qresource>
 </RCC>

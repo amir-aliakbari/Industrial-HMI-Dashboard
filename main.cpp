@@ -2,15 +2,15 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-#include "calculator.h"
+#include "hmidashboard.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
-    QGuiApplication::setApplicationName("Calculator");
+    QGuiApplication::setApplicationName("Industrial HMI Dashboard");
     QGuiApplication::setOrganizationName("Example");
 
-    qmlRegisterType<Calculator>("Calculator", 1, 0, "Calculator");
+    qmlRegisterType<HmiDashboard>("HmiDashboard", 1, 0, "HmiDashboard");
 
     QQmlApplicationEngine engine;
 

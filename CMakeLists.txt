@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(CalculatorQML
+project(IndustrialHmiDashboard
     VERSION 1.0.0
-    DESCRIPTION "A simple calculator built with QML, CMake and C++"
+    DESCRIPTION "An Industrial HMI Dashboard built with QML, CMake and C++"
     LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -16,8 +16,8 @@ find_package(Qt5 REQUIRED COMPONENTS Core Gui Qml Quick)
 
 add_executable(${PROJECT_NAME}
     main.cpp
-    calculator.h
-    calculator.cpp
+    hmidashboard.h
+    hmidashboard.cpp
     qml.qrc
 )
 
